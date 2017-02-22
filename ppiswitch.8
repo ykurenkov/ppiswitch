@@ -1,0 +1,163 @@
+.\" Copyright (c) 2008
+.\"	<yuri.kurenkov@gmail.com>. All right reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by <ran@styx.aic.net>
+.\" 4. Neither the name of the author nor the names of any co-contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"   without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY yuri.kurenkov@gmail.com AND CONTRIBUTORS ``AS IS''
+.\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL <ran@styx.aic.net> OR THE VOICES IN HIS
+.\" HEAD BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+.\" CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+.\" SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+.\" INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+.\" CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+.\" ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+.\" THE POSSIBILITY OF SUCH DAMAGE.
+.\"
+.\"
+.Dd May 21, 2008
+.Dt PPISWITCH 8 i386
+.Os
+.Sh NAME
+.Nm ppiswitch
+.Nd configure ppi(4) device
+.Sh SYNOPSIS
+.Nm
+.Op --device /dev/ppi0 
+.Op --quiet 
+.Cm --on Ar channels Pq Cm 0 Ns - Ns Cm 7 
+.Nm
+.Op --device /dev/ppi0 
+.Op --quiet 
+.Cm --off Ar channels Pq Cm 0 Ns - Ns Cm 7 
+.Nm
+.Op --device /dev/ppi0
+.Op --quiet 
+.Op Cm --time Ar sec 
+.Cm --kick Ar channels Pq Cm 0 Ns - Ns Cm 7 
+.Nm
+.Op --device /dev/ppi0
+.Op --quiet 
+.Op Cm --time Ar sec 
+.Cm --kick Ar channels Cm --on Ar channels Cm --off Ar channels  
+.Nm
+.Op --device /dev/ppi0 
+.Op --quiet 
+.Cm --allon
+.Nm
+.Op --device /dev/ppi0 
+.Op --quiet 
+.Cm --alloff
+.Nm
+.Op --device /dev/ppi0 
+.Op --quiet 
+.Cm --status
+.Nm
+.Op --device /dev/ppi0 
+.Op --quiet 
+.Cm --value Ar value Pq Cm 0 Ns - Ns Cm 255 
+.Sh DESCRIPTION
+The
+.Nm
+utility controls the operation of parallel port device 
+.Ar ppi(4) .
+Electronic controller with 8 edentical channels, connected to parallel port can operate differend electrical devices (lamps, motors) and provide flexfible control for home and industry automation.  
+.Sh OPTIONS
+The options are as follows:
+.Bl -tag -width indent
+.It Cm --device Ar device, Cm -d Ar device 
+Use specified
+.Ar device.
+Device
+.Ar /dev/ppi0 
+used as default.
+.It Cm --quiet, Cm -q
+Supress output. 
+.Ar /dev/ppi0 
+used as default.
+.It Cm --on Ar channels, Cm -i Ar channels
+Turn on
+.Ar channels . 
+.It Cm --off Ar channels, Cm -o Ar channels
+Turn off
+.Ar channels .
+.It Cm --kick Ar channels, Cm -k Ar channels
+kick on/off or off/on
+.Ar channels 
+according current 
+.Ar channel
+status: all turned on 
+.Ar channels
+will be turned off and conversely. 
+.It Cm --time Ar sec, Cm -t Ar sec
+.Cm kick 
+timeout in sec (1-86400). 1 sec is default value.
+.It Cm --allon , Cm -s
+turn on all 
+.Ar channels 
+(set).
+.It Cm --alloff , Cm -r
+turn off all 
+.Ar channels 
+(reset).
+.It Cm --status , Cm -c
+show turned on 
+.Ar channels .
+.It Cm --value Ar value, Cm -v Ar value 
+set
+.Ar value
+at 
+.Ar dcevice . 
+Number from 0 to 255 is allowed. 
+.It Ar channels 
+digits from 0 to 7, coma separated list allowed. Ex. '1,2,3,6'
+.El
+.Sh EXAMPLES
+Turn on 2 and 5 chanels:
+.Bd -literal -offset indent
+ppiswitch -i 2,5 
+ppiswitch -o 2,5 -i 1,3 
+ppiswitch -o 1,3 -i 2,5 -t 5 -k 4,7 
+.Ed
+.Pp
+You can operate with port from shell script. For example, save and restore port status: 
+.Bd -literal -offset indent
+#!/bin/sh
+# save status
+ppiswitch -q --status > /tmp/port.status
+# restore status
+ppiswitch -q -v `head -n 1 /tmp/port.status` 
+.Ed
+.Sh SEE ALSO
+.Xr ppi 4
+.Rs
+.%T "Linux Coffee-HowTo"
+.Re
+.Sh HISTORY
+The
+.Nm
+utility first appeared at 2007 
+.Sh AUTHORS
+.An -nosplit
+The
+.Nm
+utility was written by
+.An Yuri Kurenkov Aq yuri.kurenkov@gmail.com
+.Sh BUGS
+I hope,
+.Nm
+no contains any bug...
